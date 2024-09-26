@@ -1,12 +1,15 @@
 const Users = require("../models/users");
 const asyncHandler = require("express-async-handler");
+const {ObjectId} = require('mongoose').Types
 
 exports.usersPost = asyncHandler(async (req, res) => {
   try {
+    const id = req.body.id;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
     const email = req.body.emailAddress;
     const user = new Users({
+      _id: id ,
       firstname: firstName,
       lastname: lastName,
       email: email,
@@ -31,5 +34,18 @@ exports.usersIdGet = asyncHandler(async (req, res) => {
     res
       .status(404)
       .send({ message: "The user with that email does not exist" });
+  }
+});
+
+exports.usersDetailsGet = asyncHandler(async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(id);
+    const user = await Users.find({ _id: id }).exec();
+    const userDetails = user[0];
+
+    res.status(200).send(userDetails);
+  } catch (err) {
+    res.status(404).send({ message: "The user with that id does not exist" });
   }
 });
