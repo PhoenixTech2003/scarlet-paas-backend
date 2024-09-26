@@ -1,6 +1,8 @@
 const { Webhook } = require("svix");
 const users = require("../models/users");
 const asyncHandler = require("express-async-handler");
+const {exec} = require("node:child_process")
+const path = require("node:path")
 
 exports.userPost = asyncHandler(async (req, res) => {
   try {
@@ -33,6 +35,18 @@ exports.userPost = asyncHandler(async (req, res) => {
         email: email_addresses[0].email_address,
       });
       await clerkUser.save()
+      const pathToScript = path.join(__dirname,"../bash_scripts/create_user_directory.sh")
+      const pathToUser = path.join(__dirname,"../users")
+      exec(`${pathToScript} ${id} ${pathToUser}`,(error, stdout, stderr)=>{
+        if(error){
+          console.error(`Error creating directory: ${error.message}`)
+        }
+        if(stderr){
+          console.error(`stderr: ${stderr}`)
+          return
+        }
+        console.log(`stdout: ${stdout}`)
+      })
     }
 
     res.status(200).send({ message: "Webhook received successfully" });
