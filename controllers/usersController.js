@@ -40,7 +40,6 @@ exports.usersIdGet = asyncHandler(async (req, res) => {
 exports.usersDetailsGet = asyncHandler(async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id);
     const user = await Users.find({ _id: id }).exec();
     const userDetails = user[0];
 
