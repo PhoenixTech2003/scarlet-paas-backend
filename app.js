@@ -5,6 +5,8 @@ const userRouter = require("./routes/userRoute")
 const cors = require("cors")
 const webhhooksRouter = require("./routes/webhooksRoute")
 const deploymentsRouter = require("./routes/deploymentsRoute")
+const {createServer} = require("node:http")
+const  socket = require('./sockets/socket')
 
 const PORT = process.env.PORT || 8082
 
@@ -15,6 +17,8 @@ async function main() {
 }
 
 const app = express();
+const server = createServer(app)
+const io = socket.init(server)
 
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
@@ -24,6 +28,14 @@ app.use("/users", userRouter)
 app.use("/api/webhooks", webhhooksRouter)
 app.use("/deployments", deploymentsRouter)
 
-app.listen(PORT,()=>console.log(`The app is live at http://localhost:${PORT}`))
+
+io.on('connection', (socket)=>{
+  console.log('client connected')
+  socket.on('disconnect', ()=>{
+    console.log('client disconnected')
+  })
+})
+
+server.listen(PORT,()=>console.log(`The app is live at http://localhost:${PORT}`))
 
 
