@@ -29,11 +29,16 @@ app.use("/api/webhooks", webhhooksRouter)
 app.use("/deployments", deploymentsRouter)
 
 
+
 io.on('connection', (socket)=>{
   console.log('client connected')
+  socket.serverOffset = socket.handshake.auth.serverOffset || 0
+  
   socket.on('disconnect', ()=>{
     console.log('client disconnected')
+    
   })
+  
 })
 
 server.listen(PORT,()=>console.log(`The app is live at http://localhost:${PORT}`))
