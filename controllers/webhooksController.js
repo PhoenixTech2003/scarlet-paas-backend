@@ -4,6 +4,7 @@ const asyncHandler = require("express-async-handler");
 const {exec} = require("node:child_process")
 const path = require("node:path")
 
+
 exports.userPost = asyncHandler(async (req, res) => {
   try {
     const payloadString = JSON.stringify(req.body); // Convert payload to string
@@ -37,7 +38,8 @@ exports.userPost = asyncHandler(async (req, res) => {
       await clerkUser.save()
       const pathToScript = path.join(__dirname,"../bash_scripts/create_user_directory.sh")
       const pathToUser = path.join(__dirname,"../users")
-      exec(`${pathToScript} ${id} ${pathToUser}`,(error, stdout, stderr)=>{
+      const pathToLogs = path.join(__dirname,"../logs")
+      exec(`${pathToScript} ${id} ${pathToUser} ${pathToLogs}`,(error, stdout, stderr)=>{
         if(error){
           console.error(`Error creating directory: ${error.message}`)
         }
